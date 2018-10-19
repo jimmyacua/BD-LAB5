@@ -36,12 +36,16 @@ create function TotalCarrerasEstudiante(
 	as begin
 	declare @cantC int 
 
-	set @cantC =
+	set @cantC = (
+		select count(*)
+		from Estudiante e join Empadronado_En em on e.Cedula = em.CedEstudiante
+		where e.Cedula = @ced
+	)
 
 	return @cantC
 	end
 go
-select  TotalCarrerasEstudiante
+select  dbo.TotalCarrerasEstudiante('111222333') as numCarreras
 
 --3d:
 
@@ -85,3 +89,45 @@ EXEC ActualizarNotasGrupo @sigla = 'ci1310', @numG= 1,
 
 select * from Lleva l
 where l.SiglaCurso = 'ci1310'
+
+--PARTE OPCIONAL
+
+--3f:
+
+--i)
+go
+create procedure TotCarrerasEst
+	@ced char(9)
+	as
+	declare @nc int
+	set @nc = ( select count(*)
+	from Estudiante e join Empadronado_En em on e.Cedula = em.CedEstudiante
+	where e.Cedula = @ced
+	)	
+	print @nc
+	return @nc
+go
+
+drop procedure TotCarrerasEst
+
+EXEC TotCarrerasEst @ced = '111222333'
+
+
+--ii)
+go
+create function getCarreras() 
+returns @carreras table(
+	ced char(9),
+	carreras int
+)
+as 
+begin
+	insert into @carreras
+	select distinct e.Cedula, count(*)
+	from Estudiante e join Empadronado_En em on e.Cedula = em.CedEstudiante
+	group by e.Cedula
+	return
+end
+go
+
+select * from getCarreras()
