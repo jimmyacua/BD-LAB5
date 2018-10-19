@@ -42,3 +42,46 @@ create function TotalCarrerasEstudiante(
 	end
 go
 select  TotalCarrerasEstudiante
+
+--3d:
+
+go
+create procedure ActualizarNotaEstudiante
+	@ced char(9),
+	@sigla char(7),
+	@numG int,
+	@sem int,
+	@año int,
+	@nuevaNota int
+	as
+	update Lleva
+	set Nota = @nuevaNota
+	where CedEstudiante = @ced and SiglaCurso = @sigla and NumGrupo = @numG and Semestre = @sem
+	 and Año = @año
+go
+
+
+
+EXEC ActualizarNotaEstudiante @ced = '176543219', @sigla = 'ci1310', @numG= 1, 
+@sem = 2, @año = 2018, @nuevaNota = 78 
+
+--3e:
+go
+create procedure ActualizarNotasGrupo
+	@sigla char(7),
+	@numG int,
+	@sem int,
+	@año int,
+	@nuevaNota int
+	as
+	update Lleva
+	set Nota = @nuevaNota
+	where SiglaCurso = @sigla and NumGrupo = @numG and Semestre = @sem
+	 and Año = @año
+go
+
+EXEC ActualizarNotasGrupo @sigla = 'ci1310', @numG= 1, 
+@sem = 2, @año = 2018, @nuevaNota = 10 
+
+select * from Lleva l
+where l.SiglaCurso = 'ci1310'
